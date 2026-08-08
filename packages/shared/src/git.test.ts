@@ -54,6 +54,11 @@ describe("parseGitHubRepositoryNameWithOwnerFromRemoteUrl", () => {
 });
 
 describe("isTemporaryWorktreeBranch", () => {
+  it("uses the personalized worktree branch prefix", () => {
+    expect(WORKTREE_BRANCH_PREFIX).toBe("kdcokenny");
+    expect(buildTemporaryWorktreeBranchName(() => "deadbeef")).toBe("kdcokenny/deadbeef");
+  });
+
   it("matches the generated temporary worktree refName format", () => {
     expect(
       isTemporaryWorktreeBranch(
@@ -78,9 +83,11 @@ describe("isTemporaryWorktreeBranch", () => {
   });
 
   it("matches legacy UUID-shaped temporary worktree refs from older mobile builds", () => {
-    expect(
-      isTemporaryWorktreeBranch(`${WORKTREE_BRANCH_PREFIX}/f4ae4e0e-f971-4d48-b4f2-9cf0aa54ab12`),
-    ).toBe(true);
+    expect(isTemporaryWorktreeBranch("t3code/f4ae4e0e-f971-4d48-b4f2-9cf0aa54ab12")).toBe(true);
+  });
+
+  it("matches temporary worktree refs created with the previous prefix", () => {
+    expect(isTemporaryWorktreeBranch("t3code/deadbeef")).toBe(true);
   });
 
   it("rejects UUID-shaped refs that are not RFC 4122 v4", () => {
